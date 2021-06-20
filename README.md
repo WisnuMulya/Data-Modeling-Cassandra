@@ -17,18 +17,20 @@ project.
 	 
   2. User Sessions Table
   
-     The primary key for this table is `(user_id, session_id, item_in_session)`. This
+     The primary key for this table is `((user_id, session_id), item_in_session)`. This
 	 is so that the `WHERE` query for particular `user_id` and `session_id` would work.
-	 Also, the additional `item_in_session` clustering key is there to enable multiple
-	 events in a session by a given user_id would be successfully inserted. This would
-	 also mean that the output of the query of `user_id` and `session_id` would then
-	 be sorted based on `item_in_session`.
+	 The table would then be partitioned by a composite key `(user_id, session_id)` to
+	 make sure that both of them are not in a separate partition. Also, the additional
+	 `item_in_session` clustering key is there to enable multiple events in a session
+	 by a given user_id would be successfully inserted. This would also mean that the
+	 output of the query of `user_id` and `session_id` would then be sorted based on
+	 `item_in_session`.
 	 
   3. Song Sessions Table
   
-     The primary key for this table is `(song_title, session_id, item_in_session)`.
-	 This is so that the `WHERE` query for a particular `song_title` would work. The
-	 rest of the clustering keys are to make sure all events are recorded: otherwise,
+     The primary key for this table is `(song_title, user_id)`. This is so that the
+	 `WHERE` query for a particular `song_title` would work. The `user_id` clustering 
+	 key is there to make sure all users listening to a song are recorded: otherwise,
 	 there would only be one row for one song title.
 	 
 
